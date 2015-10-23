@@ -1,4 +1,4 @@
-package cs440_hw2;
+
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -17,6 +17,10 @@ public class GameBoard {
 	private static int row;
 	private static int column;
 	
+	//Node Board
+	// Node[][] nodeBoard = new Node[][]();
+	//
+	//
 	
 	public GameBoard(){
 		this.grid = null;

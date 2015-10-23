@@ -1,4 +1,4 @@
-package cs440_hw2;
+
 
 public class GameController {
 	GameBoard board;
