@@ -33,7 +33,7 @@ public class Node implements Comparable<Node>{
 	}
 	public void setAccumulated(int newScore)
 	{
-		accumulatedScore+=newScore;
+		accumulatedScore=newScore;
 	}
 	
 	public int getX()

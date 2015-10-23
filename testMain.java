@@ -44,7 +44,7 @@ public class testMain {
 
 					int newX = mouseX+dx[i];
 					int newY = mouseY+dy[i];
-					if((newX>=0&&newX<6)&&(newY>=0&&newY<6))
+					if((newX>=0&&newX<mm.gameBoard.length)&&(newY>=0&&newY<mm.gameBoard.length))
 					{
 					if(mm.gameBoard[newX][newY].getOwnership()==1)
 					{
@@ -60,7 +60,7 @@ public class testMain {
 	
 						int newX = mouseX+dx[i];
 						int newY = mouseY+dy[i];
-						if((newX>=0&&newX<6)&&(newY>=0&&newY<6))
+						if((newX>=0&&newX<mm.gameBoard.length)&&(newY>=0&&newY<mm.gameBoard.length))
 						{
 						if(mm.gameBoard[newX][newY].getOwnership()!=1&&mm.gameBoard[newX][newY].getOwnership()!=0)
 						{
@@ -100,14 +100,21 @@ public class testMain {
 		        		{
 		        		mm.gameBoard[pTwo.getX()][pTwo.getY()].setOwnership(2);
 		        		}
+		        		try
+		        		{
 		        		twoScore +=mm.gameBoard[pTwo.getX()][pTwo.getY()].getScore();
+		        		}
+		        		catch(Exception e)
+		        		{
+		        			
+		        		}
 		        		boolean pTwoconnected = false;
 		        		for(int i = 0;i<dx.length;i++)
 		        		{
 
 		        				int newX = pTwo.getX()+dx[i];
 		        				int newY = pTwo.getY()+dy[i];
-		        				if((newX>=0&&newX<6)&&(newY>=0&&newY<6))
+		        				if((newX>=0&&newX<mm.gameBoard.length)&&(newY>=0&&newY<mm.gameBoard.length))
 		        				{
 		        				if(mm.gameBoard[newX][newY].getOwnership()==2)
 		        				{
@@ -123,7 +130,7 @@ public class testMain {
 
 		        					int newX = pTwo.getX()+dx[i];
 		        					int newY = pTwo.getY()+dy[i];
-		        					if((newX>=0&&newX<6)&&(newY>=0&&newY<6))
+		        					if((newX>=0&&newX<mm.gameBoard.length)&&(newY>=0&&newY<mm.gameBoard.length))
 		        					{
 		        					if(mm.gameBoard[newX][newY].getOwnership()!=2&&mm.gameBoard[newX][newY].getOwnership()!=0)
 		        					{
@@ -205,6 +212,13 @@ public class testMain {
 				if(e.getSource() == two)
 				{
 					fileName = "Narvik";
+					try {
+						mm = new testBoard(fileName);
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					f.add(mm);
 					System.out.println(fileName);
 				}
 				else
@@ -281,7 +295,7 @@ public class testMain {
 		f.setTitle("Game War");
 		f.add(mm);
 		System.out.println("mm:    "+mm.cols+"     row: "+mm.row);
-		f.setSize(300, 480);
+		f.setSize(mm.gameBoard.length*50, mm.gameBoard.length*50+180);
 		f.setBackground(Color.WHITE);
 		f.setLocationRelativeTo(null);
 		f.setResizable(false);
@@ -297,9 +311,9 @@ public class testMain {
 		Node playerOne = null;
 		Node playerTwo = null;
 	
+		/*
 		
-		
-	/*
+
 		while(true)
 		{
 			long tStart = System.currentTimeMillis();
@@ -351,9 +365,18 @@ public class testMain {
 			mm.pOt = Double.toString(elapsedSeconds);
 			mm.pOs = Integer.toString(oneScore);
 			mm.pTs = Integer.toString(twoScore);
+			for(int i = 0;i<6;i++)
+			{
+				for(int j = 0;j<6;j++)
+				{
+					System.out.print(mm.gameBoard[i][j].getOwnership()+" ");
+				}
+				System.out.println();
+			}
+			//Thread.sleep(5000);
 			mm.repaint();
 			}
-			//Thread.sleep(1000);
+			Thread.sleep(500);
 			
 			long tStartT = System.currentTimeMillis();
 			playerTwo = mm.minimax(null, true, mm.gameBoard, 2,3);
@@ -403,13 +426,23 @@ public class testMain {
 			mm.pTt = Double.toString(elapsedSeconds);
 			mm.pOs = Integer.toString(oneScore);
 			mm.pTs = Integer.toString(twoScore);
+			
+			for(int i = 0;i<6;i++)
+			{
+				for(int j = 0;j<6;j++)
+				{
+					System.out.print(mm.gameBoard[i][j].getOwnership()+" ");
+				}
+				System.out.println();
+			}
+		//	Thread.sleep(5000);
 			mm.repaint();
 			}
-		//	Thread.sleep(1000);
+			Thread.sleep(500);
 		}
-	*/
+	
 		//here noti
-		
+	*/
 		
 	}
 	

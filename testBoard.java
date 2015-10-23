@@ -27,37 +27,37 @@ public class testBoard extends JComponent implements ActionListener {
 		if(fileName == null)
 		{
 			
-			this.fileName = "/Users/ziyaowang/Documents/Fall 2015/ai/game_boards/Smolensk.txt";
+			this.fileName = "src/ziyao.txt";
 			System.out.println("here :  "+fileName);
 		}
 		else
 		if(fileName.equals("Keren"))
 		{
-			this.fileName = "/Users/ziyaowang/Documents/Fall 2015/ai/game_boards/Keren.txt";
+			this.fileName = "src/Keren.txt";
 			this.repaint();
 		}
 		else
 		if(fileName.equals("Narvik"))
 		{
-			this.fileName = "/Users/ziyaowang/Documents/Fall 2015/ai/game_boards/Narvik.txt";
+			this.fileName = "src/Narvik.txt";
 			this.repaint();
 		}
 		else
 		if(fileName.equals("Sevastopol"))
 		{
-			this.fileName = "/Users/ziyaowang/Documents/Fall 2015/ai/game_boards/Sevastopol.txt";
+			this.fileName = "src/Sevastopol.txt";
 			this.repaint();
 		}
 		else
 		if(fileName.equals("Smolensk"))
 		{
-			this.fileName = "/Users/ziyaowang/Documents/Fall 2015/ai/game_boards/Smolensk.txt";
+			this.fileName = "src/Smolensk.txt";
 			this.repaint();
 		}
 		else
 		if(fileName.equals("Westerplatte"))
 		{
-			this.fileName = "/Users/ziyaowang/Documents/Fall 2015/ai/game_boards/Westerplatte.txt";
+			this.fileName = "src/Westerplatte.txt";
 			this.repaint();
 		}
 		ImageIcon img = new ImageIcon("src/realFrame.png");
@@ -148,7 +148,7 @@ public class testBoard extends JComponent implements ActionListener {
             if (gameBoard == null) {
                 size = vals.length;
                 
-                gameBoard = new Node[theCount][6];
+                gameBoard = new Node[theCount][theCount];
                // System.out.println("here:   "+theCount+size);
             }
             row = size;
@@ -226,20 +226,23 @@ public class testBoard extends JComponent implements ActionListener {
 		
 		if(isMaximizing == true)//max
 		{
-			Node[][] copyOne = new Node[6][6];
-		    for (int i = 0; i < 6; i++) {
-		    	for(int j =0;j<6;j++)
+			
+			Node[][] copyOne = new Node[gameBoard.length][gameBoard.length];
+		    for (int i = 0; i < gameBoard.length; i++) {
+		    	for(int j =0;j<gameBoard.length;j++)
 		    	{	
 		    		Node temp = new Node(gameBoard[i][j].getScore(),gameBoard[i][j].getX(),gameBoard[i][j].getY(),gameBoard[i][j].getOwnership());
-		    	 copyOne[i][j]=temp;
+		    		copyOne[i][j]=temp;
 		    	}
 		    }
+		    
+		    
 			PriorityQueue<Node> playerOneChildrenList = new PriorityQueue<Node>(Collections.reverseOrder()); //use priorityQueue,acsending or disacsending.
 			Queue<Node> waitList = new LinkedList<Node>();
 			boolean walkable = false;
-			for(int i = 0;i<6;i++)
+			for(int i = 0;i<gameBoard.length;i++)
 			{
-				for(int j = 0;j<6;j++)
+				for(int j = 0;j<gameBoard.length;j++)
 				{
 					if(copyOne[i][j].getOwnership() == 0)
 					{
@@ -256,30 +259,30 @@ public class testBoard extends JComponent implements ActionListener {
 			}
 			
 			int waitSize = waitList.size();
+			
+			
 			for(int l = 0;l<waitSize;l++)
 			{
-				Node[][] newCopy = new Node[6][6];
-			    for (int i = 0; i < 6; i++) {
-			    	for(int j =0;j<6;j++)
+				
+				Node[][] newCopy = new Node[gameBoard.length][gameBoard.length];
+			    for (int i = 0; i < gameBoard.length; i++) {
+			    	for(int j =0;j<gameBoard.length;j++)
 			    	{	
 			    		Node temp = new Node(copyOne[i][j].getScore(),copyOne[i][j].getX(),copyOne[i][j].getY(),copyOne[i][j].getOwnership());
 			    		newCopy[i][j]=temp;
 			    	}
 			    }
+			    
 				Node takenNode =waitList.poll();
+				
 				if(node!=null)
 				{
 					takenNode.setAccumulated(node.getAccumulated()+takenNode.getScore());
-			//		System.out.println("now in Max accumulated score:  "+takenNode.getAccumulated());
-				//	Thread.sleep(300);
-					takenNode.parentNode = node;
 				}
 				else
 				{
 					
 					takenNode.setAccumulated(takenNode.getScore());
-				//	System.out.println("now in Max accumulated score:  "+takenNode.getAccumulated());
-					//Thread.sleep(300);
 				}
 				newCopy[takenNode.getX()][takenNode.getY()].setOwnership(playerID);
 				boolean connected = false;
@@ -287,7 +290,7 @@ public class testBoard extends JComponent implements ActionListener {
 				{
 						int newX = takenNode.getX()+dx[i];
 						int newY = takenNode.getY()+dy[i];
-						if((newX>=0&&newX<6)&&(newY>=0&&newY<6))
+						if((newX>=0&&newX<gameBoard.length)&&(newY>=0&&newY<gameBoard.length))
 						{
 						if(newCopy[newX][newY].getOwnership()==playerID)
 						{
@@ -305,28 +308,14 @@ public class testBoard extends JComponent implements ActionListener {
 		
 							int newX = takenNode.getX()+dx[i];
 							int newY = takenNode.getY()+dy[i];
-							if((newX>=0&&newX<6)&&(newY>=0&&newY<6))
+							if((newX>=0&&newX<gameBoard.length)&&(newY>=0&&newY<gameBoard.length))
 							{
 							if(newCopy[newX][newY].getOwnership()!=playerID&&newCopy[newX][newY].getOwnership()!=0)
 							{
 								this.eatOpponent(newCopy, playerID, newX, newY);
+		
 								takenNode.setAccumulated(takenNode.getAccumulated()+newCopy[newX][newY].getScore());
-								/*
-								try
-								{
-								if(node!=null)
-								{
-									node.setAccumulated(node.getAccumulated()-newCopy[newX][newY].getScore());
-								}
-								}
-								catch(Exception e)
-								{
-									
-								}
-								*/
-								
-						//		System.out.println("now in Max accumulated score after eat opponent:  "+takenNode.getAccumulated());
-					//			Thread.sleep(300);
+
 							}
 							}
 						
@@ -343,34 +332,33 @@ public class testBoard extends JComponent implements ActionListener {
 					opponentID = 1;
 				}
 				Node minValueNode = minimax(takenNode,false,newCopy, opponentID, depth-1);
-			//	if(minValueNode!=null)
-			//	{
-				//System.out.println("max adding:   "+minValueNode.getAccumulated());
-				//Thread.sleep(500);
+				if(node!=null)
+				minValueNode.parentNode = new Node(node.getAccumulated(),node.getX(),node.getY(),node.getOwnership());
+				
+				
 				playerOneChildrenList.add(minValueNode);
-			//	}else
-			//	{
-			//		playerOneChildrenList.add(takenNode);
-			//
-			//	}
-				//System.out.println("the node in the maximum list the max has score:  "+playerOneChildrenList.peek().getAccumulated());
-			//	Thread.sleep(300);
+				
 			}
-			//for(int i=0;i <playerOneChildrenList.size();i++)
-		//	{
-			//Thread.sleep(500);
-			//	System.out.print("max:   "+playerOneChildrenList.peek().getAccumulated()+"   ");
-		//	}
-			//Thread.sleep(500);
-			return playerOneChildrenList.poll();
-			
+
+			if(playerOneChildrenList.peek().parentNode!=null)
+			{
+			playerOneChildrenList.peek().parentNode.setAccumulated(playerOneChildrenList.peek().getAccumulated());
+			System.out.println("max x:  "+playerOneChildrenList.peek().parentNode.getX()+"   y:  "+playerOneChildrenList.peek().parentNode.getY()+"   value:  "+playerOneChildrenList.peek().parentNode.getAccumulated());
+			return playerOneChildrenList.poll().parentNode;
+			}
+			else
+			{
+			if(node==null)
+			System.out.println("pulling max value   "+ playerOneChildrenList.peek().getAccumulated()+"  x:  "+playerOneChildrenList.peek().getX()+"  y:  "+playerOneChildrenList.peek().getY());
+				return playerOneChildrenList.poll();
+			}
 		
 		}else
 		if(isMaximizing == false)//min
 		{
-			Node[][] copyOne = new Node[6][6];
-		    for (int i = 0; i < 6; i++) {
-		    	for(int j =0;j<6;j++)
+			Node[][] copyOne = new Node[gameBoard.length][gameBoard.length];
+		    for (int i = 0; i < gameBoard.length; i++) {
+		    	for(int j =0;j<gameBoard.length;j++)
 		    	{	
 		    		Node temp = new Node(gameBoard[i][j].getScore(),gameBoard[i][j].getX(),gameBoard[i][j].getY(),gameBoard[i][j].getOwnership());
 		    	 copyOne[i][j]=temp;
@@ -379,9 +367,9 @@ public class testBoard extends JComponent implements ActionListener {
 			PriorityQueue<Node> playerTwoChildrenList = new PriorityQueue<Node>(); 
 			Queue<Node> waitList = new LinkedList<Node>();
 			boolean walkable = false;
-			for(int i = 0;i<6;i++)
+			for(int i = 0;i<gameBoard.length;i++)
 			{
-				for(int j = 0;j<6;j++)
+				for(int j = 0;j<gameBoard.length;j++)
 				{
 					if(copyOne[i][j].getOwnership() == 0)
 					{
@@ -401,9 +389,9 @@ public class testBoard extends JComponent implements ActionListener {
 			for(int l = 0;l<waitSize;l++)
 			{
 				
-				Node[][] newCopy = new Node[6][6];
-			    for (int i = 0; i < 6; i++) {
-			    	for(int j =0;j<6;j++)
+				Node[][] newCopy = new Node[gameBoard.length][gameBoard.length];
+			    for (int i = 0; i < gameBoard.length; i++) {
+			    	for(int j =0;j<gameBoard.length;j++)
 			    	{	
 			    		Node temp = new Node(copyOne[i][j].getScore(),copyOne[i][j].getX(),copyOne[i][j].getY(),copyOne[i][j].getOwnership());
 			    		newCopy[i][j]=temp;
@@ -420,7 +408,7 @@ public class testBoard extends JComponent implements ActionListener {
 	
 						int newX = takenNode.getX()+dx[i];
 						int newY = takenNode.getY()+dy[i];
-						if((newX>=0&&newX<6)&&(newY>=0&&newY<6))
+						if((newX>=0&&newX<gameBoard.length)&&(newY>=0&&newY<gameBoard.length))
 						{
 						if(newCopy[newX][newY].getOwnership()==playerID)
 						{
@@ -438,22 +426,12 @@ public class testBoard extends JComponent implements ActionListener {
 		
 							int newX = takenNode.getX()+dx[i];
 							int newY = takenNode.getY()+dy[i];
-							if((newX>=0&&newX<6)&&(newY>=0&&newY<6))
+							if((newX>=0&&newX<gameBoard.length)&&(newY>=0&&newY<gameBoard.length))
 							{
 							if(newCopy[newX][newY].getOwnership()!=playerID&&newCopy[newX][newY].getOwnership()!=0)
 							{
 								this.eatOpponent(newCopy, playerID, newX, newY);
-								//takenNode.setAccumulated(takenNode.getAccumulated()+newCopy[newX][newY].getScore());
-								
-								try{
-								if(node!=null)
-								takenNode.setAccumulated(takenNode.getAccumulated()-newCopy[newX][newY].getScore());
-								}
-								catch(Exception e)
-								{
-									
-								}
-								
+								takenNode.setAccumulated(takenNode.getAccumulated()-newCopy[newX][newY].getScore());							
 							}
 							}
 						
@@ -469,27 +447,13 @@ public class testBoard extends JComponent implements ActionListener {
 				}
 				
 				Node maxValueNode = minimax(takenNode,true,newCopy, opponentID, depth-1);
-				//if(maxValueNode!=null)
-				//{
-			//	Thread.sleep(500);
-			//	System.out.println("min adding:   "+maxValueNode.getAccumulated());
-				
+				maxValueNode.parentNode =  new Node(node.getAccumulated(),node.getX(),node.getY(),node.getOwnership());
+				//maxValueNode.parentNode.setAccumulated(maxValueNode.getAccumulated());
 				playerTwoChildrenList.add(maxValueNode);
-				//}else
-				//{
-				//	playerTwoChildrenList.add(takenNode);
-					
-				
-			//	}
 			}
-			
-			//	Thread.sleep(2000);
-			//	System.out.print("min:   "+playerTwoChildrenList.peek().getAccumulated()+"   ");
-			
-			//Thread.sleep(500);
-			playerTwoChildrenList.peek().setX(node.getX());
-			playerTwoChildrenList.peek().setY(node.getY());
-			return playerTwoChildrenList.poll();
+			playerTwoChildrenList.peek().parentNode.setAccumulated(playerTwoChildrenList.peek().getAccumulated());
+			System.out.println("min:   parent x:  "+playerTwoChildrenList.peek().parentNode.getX()+"    parent y:  "+playerTwoChildrenList.peek().parentNode.getY()+"   Value: "+playerTwoChildrenList.peek().getAccumulated());
+			return playerTwoChildrenList.poll().parentNode;
 		}
 		return null;
 	
@@ -789,9 +753,9 @@ public class testBoard extends JComponent implements ActionListener {
 		//g.fillRect(50, 50, 10, 10);
 
 	
-		for(int x=0;x<6;x++)
+		for(int x=0;x<gameBoard.length;x++)
 		{
-			for(int y=0;y<6;y++)
+			for(int y=0;y<gameBoard.length;y++)
 			{
 				//System.out.println("ownship:  "+gameBoard[x][y].getOwnership());
 				System.out.println("Current Score:   "+gameBoard[y][x].getScore()+"   Confirm current Node:    "+gameBoard[y][x].getOwnership()+"    x:   "+gameBoard[y][x].getX()+"    y:  "+gameBoard[y][x].getY());          
@@ -860,10 +824,10 @@ public class testBoard extends JComponent implements ActionListener {
 
 		}
 		g.setColor(Color.BLACK);
-		g.drawString("Blue Player Score:  "+pOs,10,330 );
-		g.drawString("Blue Player Decision Time:  "+pOt,10,355 );
-		g.drawString("Red Player Score:  "+pTs,10,380 );
-		g.drawString("Red Player Decision Time:  "+pTt,10,405 );
+		g.drawString("Blue Player Score:  "+pOs,10,gameBoard.length*50+30 );
+		g.drawString("Blue Player Decision Time:  "+pOt,10,gameBoard.length*50+55 );
+		g.drawString("Red Player Score:  "+pTs,10,gameBoard.length*50+80 );
+		g.drawString("Red Player Decision Time:  "+pTt,10,gameBoard.length*50+105 );
 		
 	}
 	
