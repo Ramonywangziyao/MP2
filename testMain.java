@@ -3,6 +3,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -14,28 +15,33 @@ import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
 
-public class testMain {
+public class testMain implements Runnable{
 	private static String fileName;
 	static JMenuItem one;
 	static JMenuItem two;
 	static JMenuItem three; 
 	static JMenuItem four; 
 	static JMenuItem five;
+	static JMenuItem six;
 	static int mouseX;
 	static int mouseY;
 	public static void eatOpponent(Node[][] gameBoard,int playerID,int x,int y)
 	{
 			gameBoard[x][y].setOwnership(playerID);
 	}
+
 	public static class AL extends MouseAdapter implements Runnable
 	{
 		public void mouseClicked(MouseEvent e)
 		{
+			
 			System.out.println("clicked!");
 			mouseX = e.getY()/50-1;
 			mouseY = e.getX()/50;
 			System.out.println("x:  "+mouseX+"  y: "+mouseY);
-
+			if(mm.gameBoard[mouseX][mouseY].getOwnership()!=1)
+			{
+				System.out.println("asdasds");
 			mm.gameBoard[mouseX][mouseY].setOwnership(1);
 			oneScore += mm.gameBoard[mouseX][mouseY].getScore();
 			boolean pOneconnected = false;
@@ -91,7 +97,7 @@ public class testMain {
 						}
 		        		long tStartT = System.currentTimeMillis();
 		        		try {
-		        			pTwo = mm.minimax(null, true, mm.gameBoard, 2, 3);
+		        			pTwo = mm.minimax(null, true, mm.gameBoard, 2, 5);
 		        		} catch (InterruptedException e1) {
 		        			// TODO Auto-generated catch block
 		        			e1.printStackTrace();
@@ -154,8 +160,8 @@ public class testMain {
 		        	}
 		        };
 		        two.start();
-
-			
+			}
+			Thread.currentThread().stop();
 		}
 	      @Override
 	      public void mouseReleased(MouseEvent e) {
@@ -168,9 +174,7 @@ public class testMain {
 		}
 	}
 
-	public static void pTplay()
-	{
-			}
+
 	static Node pOne;
 	static Node pTwo;
 	static int playX;
@@ -184,33 +188,68 @@ public class testMain {
 	static testBoard mm;
 	static int oneScore = 0;
 	static int twoScore = 0;
+	static JMenuBar menubar;
+	static JMenu BoardFile =new JMenu("BoardFile");;
+	static JMenu algorithm = new JMenu("Strategy");;
+	static JMenuItem strategyOne = new JMenuItem("Alpha vs Alpha");
+	static JMenuItem strategyTwo = new JMenuItem("MiniMax vs Minimax");
+	static JMenuItem strategyThree = new JMenuItem("Alpha vs Minimax");
+	static JMenuItem strategyFour = new JMenuItem("Minimax vs Alpha");
+	static JMenuItem strategyF = new JMenuItem("Human vs Agent");
 	public static void main(String[]args) throws IOException,InterruptedException
 	{
 		f = new JFrame();
 		//ArrayList<Node> solution = new ArrayList<Node>();
-		JMenuBar menubar = new JMenuBar();
+		menubar = new JMenuBar();
 		f.setJMenuBar(menubar);
 		
 		
 		//***********human play **************
-		f.addMouseListener(new AL());
+		//f.addMouseListener(new AL());
 		//************************
-		
-		
-		JMenu BoardFile = new JMenu("BoardFile");
-		BoardFile.addMenuListener(new MenuListener(){
-
-			@Override
-			public void menuSelected(MenuEvent e) {
-				// TODO Auto-generated method stub
-				if(e.getSource() == one)
-				{
+		menubar.add(BoardFile);
+		menubar.add(algorithm);
+		one = new JMenuItem("Keren.txt");
+	     one.addActionListener(new ActionListener() {
+	            public void actionPerformed(ActionEvent e) {
+	            	System.out.println("entered!!!!!!!!!!!!!");
 					fileName = "Keren";
-					System.out.println(fileName);
-				}
-				else
-				if(e.getSource() == two)
-				{
+					try {
+						mm = new testBoard(fileName);
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					f.dispose();
+					f = new JFrame();
+					//ArrayList<Node> solution = new ArrayList<Node>();
+					JMenuBar menubar = new JMenuBar();
+					menubar.add(BoardFile);
+					menubar.add(algorithm);
+					f.setJMenuBar(menubar);
+					f.setTitle("Game War");
+					f.add(mm);
+					System.out.println("mm:    "+mm.cols+"     row: "+mm.row);
+					f.setSize(mm.gameBoard.length*50, mm.gameBoard.length*50+180);
+					f.setBackground(Color.WHITE);
+					f.setLocationRelativeTo(null);
+					f.setResizable(false);
+					f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			//		f.addMouseListener(new AL());
+					
+					f.setVisible(true);
+					Thread.currentThread().stop();
+					mm.pOs = "";
+					mm.pOt = "";
+					mm.pTs = "";
+					mm.pTt = "";
+	            }
+
+	        });
+		two = new JMenuItem("Narvik.txt");
+	     two.addActionListener(new ActionListener() {
+	            public void actionPerformed(ActionEvent e) {
+	            	System.out.println("entered!!!!!!!!!!!!!");
 					fileName = "Narvik";
 					try {
 						mm = new testBoard(fileName);
@@ -218,76 +257,266 @@ public class testMain {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
+					f.dispose();
+					f = new JFrame();
+					//ArrayList<Node> solution = new ArrayList<Node>();
+					JMenuBar menubar = new JMenuBar();
+					menubar.add(BoardFile);
+					menubar.add(algorithm);
+					f.setJMenuBar(menubar);
+					f.setTitle("Game War");
 					f.add(mm);
-					System.out.println(fileName);
-				}
-				else
-				if(e.getSource()==three)
-				{
-					fileName = "Sevastopol";
-					System.out.println(fileName);
-				}
-				else
-				if(e.getSource()==four)
-				{
-					fileName = "Smolensk";
-					System.out.println(fileName);
-				}
-				else
-				if(e.getSource()==five)
-				{
-					System.exit(0);
-					//fileName = "Westerplatte";
-					//System.out.println(fileName);
-				}
-			}
+					System.out.println("mm:    "+mm.cols+"     row: "+mm.row);
+					f.setSize(mm.gameBoard.length*50, mm.gameBoard.length*50+180);
+					f.setBackground(Color.WHITE);
+					f.setLocationRelativeTo(null);
+					f.setResizable(false);
+					f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			//		f.addMouseListener(new AL());
+					
+					f.setVisible(true);
+					Thread.currentThread().stop();
+					mm.pOs = "";
+					mm.pOt = "";
+					mm.pTs = "";
+					mm.pTt = "";
+	            }
 
-			@Override
-			public void menuDeselected(MenuEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void menuCanceled(MenuEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			
-			
-			
-			
-			
-			
-			
-			
-		});
-		JMenu algorithm = new JMenu("Strategy");
-		menubar.add(BoardFile);
-		menubar.add(algorithm);
-		one = new JMenuItem("Keren.txt");
-		two = new JMenuItem("Narvik.txt");
+	        });
 		three = new JMenuItem("Sevastopol.txt");
+	     three.addActionListener(new ActionListener() {
+	            public void actionPerformed(ActionEvent e) {
+	            	System.out.println("entered!!!!!!!!!!!!!");
+					fileName = "Sevastopol";
+					try {
+						mm = new testBoard(fileName);
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					f.dispose();
+					f = new JFrame();
+					//ArrayList<Node> solution = new ArrayList<Node>();
+					JMenuBar menubar = new JMenuBar();
+					menubar.add(BoardFile);
+					menubar.add(algorithm);
+					f.setJMenuBar(menubar);
+					f.setTitle("Game War");
+					f.add(mm);
+					System.out.println("mm:    "+mm.cols+"     row: "+mm.row);
+					f.setSize(mm.gameBoard.length*50, mm.gameBoard.length*50+180);
+					f.setBackground(Color.WHITE);
+					f.setLocationRelativeTo(null);
+					f.setResizable(false);
+					f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			//		f.addMouseListener(new AL());
+					
+					f.setVisible(true);
+					Thread.currentThread().stop();
+					mm.pOs = "";
+					mm.pOt = "";
+					mm.pTs = "";
+					mm.pTt = "";
+	            }
+
+	        });
 		four = new JMenuItem("Smolensk.txt");
+	     four.addActionListener(new ActionListener() {
+	            public void actionPerformed(ActionEvent e) {
+	            	System.out.println("entered!!!!!!!!!!!!!");
+					fileName = "Smolensk";
+					try {
+						mm = new testBoard(fileName);
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					f.dispose();
+					f = new JFrame();
+					//ArrayList<Node> solution = new ArrayList<Node>();
+					JMenuBar menubar = new JMenuBar();
+					menubar.add(BoardFile);
+					menubar.add(algorithm);
+					f.setJMenuBar(menubar);
+					f.setTitle("Game War");
+					f.add(mm);
+					System.out.println("mm:    "+mm.cols+"     row: "+mm.row);
+					f.setSize(mm.gameBoard.length*50, mm.gameBoard.length*50+180);
+					f.setBackground(Color.WHITE);
+					f.setLocationRelativeTo(null);
+					f.setResizable(false);
+					f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			//		f.addMouseListener(new AL());
+					
+					f.setVisible(true);
+					Thread.currentThread().stop();
+					mm.pOs = "";
+					mm.pOt = "";
+					mm.pTs = "";
+					mm.pTt = "";
+	            }
+
+	        });
 		five = new JMenuItem("Westerplatte.txt");
-		
+	     five.addActionListener(new ActionListener() {
+	            public void actionPerformed(ActionEvent e) {
+	            	System.out.println("entered!!!!!!!!!!!!!");
+					fileName = "Westerplatte";
+					try {
+						mm = new testBoard(fileName);
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					f.dispose();
+					f = new JFrame();
+					//ArrayList<Node> solution = new ArrayList<Node>();
+					JMenuBar menubar = new JMenuBar();
+					menubar.add(BoardFile);
+					menubar.add(algorithm);
+					f.setJMenuBar(menubar);
+					f.setTitle("Game War");
+					f.add(mm);
+					System.out.println("mm:    "+mm.cols+"     row: "+mm.row);
+					f.setSize(mm.gameBoard.length*50, mm.gameBoard.length*50+180);
+					f.setBackground(Color.WHITE);
+					f.setLocationRelativeTo(null);
+					f.setResizable(false);
+					f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+				//	f.addMouseListener(new AL());
+					
+					f.setVisible(true);
+					Thread.currentThread().stop();
+					mm.pOs = "";
+					mm.pOt = "";
+					mm.pTs = "";
+					mm.pTt = "";
+	            }
+
+	        });
+	 	six = new JMenuItem("ziyao.txt");
+	     six.addActionListener(new ActionListener() {
+	            public void actionPerformed(ActionEvent e) {
+	            	System.out.println("entered!!!!!!!!!!!!!");
+					fileName = "ziyao";
+					try {
+						mm = new testBoard(fileName);
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					f.dispose();
+					f = new JFrame();
+					//ArrayList<Node> solution = new ArrayList<Node>();
+					JMenuBar menubar = new JMenuBar();
+					menubar.add(BoardFile);
+					menubar.add(algorithm);
+					f.setJMenuBar(menubar);
+					f.setTitle("Game War");
+					f.add(mm);
+					System.out.println("mm:    "+mm.cols+"     row: "+mm.row);
+					f.setSize(mm.gameBoard.length*50, mm.gameBoard.length*50+180);
+					f.setBackground(Color.WHITE);
+					f.setLocationRelativeTo(null);
+					f.setResizable(false);
+					f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+					//f.addMouseListener(new AL());
+					
+					f.setVisible(true);
+					Thread.currentThread().stop();
+					mm.pOs = "";
+					mm.pOt = "";
+					mm.pTs = "";
+					mm.pTt = "";
+	            }
+
+	        });
 		BoardFile.add(one);
 		BoardFile.add(two);
 		BoardFile.add(three);
 		BoardFile.add(four);
 		BoardFile.add(five);
-		
-		JMenuItem strategyOne = new JMenuItem("Alpha vs Alpha");
-		JMenuItem strategyTwo = new JMenuItem("MiniMax vs Minimax");
-		JMenuItem strategyThree = new JMenuItem("Alpha vs Minimax");
-		JMenuItem strategyFour = new JMenuItem("Minimax vs Alpha");
-		JMenuItem strategyF = new JMenuItem("Human vs Agent");
+		BoardFile.add(six);
+
+		strategyTwo.addActionListener(new ActionListener()  {
+            public void actionPerformed(ActionEvent e) {
+            	try {
+					mm = new testBoard(fileName);
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+            	f.dispose();
+				f = new JFrame();
+				//ArrayList<Node> solution = new ArrayList<Node>();
+				JMenuBar menubar = new JMenuBar();
+				menubar.add(BoardFile);
+				menubar.add(algorithm);
+				f.setJMenuBar(menubar);
+				f.setTitle("Game War");
+				f.add(mm);
+				System.out.println("mm:    "+mm.cols+"     row: "+mm.row);
+				f.setSize(mm.gameBoard.length*50, mm.gameBoard.length*50+180);
+				f.setBackground(Color.WHITE);
+				f.setLocationRelativeTo(null);
+				f.setResizable(false);
+				f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+				//f.addMouseListener(new AL());
+				mm.pOs = "";
+				mm.pOt = "";
+				mm.pTs = "";
+				mm.pTt = "";
+				f.setVisible(true);
+            	minimaxvsminimax newRound = new minimaxvsminimax(mm);
+            	newRound.start();
+		        	
+				
+            }
+        
+        });
+		strategyF.addActionListener(new ActionListener()
+		{
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				try {
+					mm = new testBoard(fileName);
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				f.dispose();
+				f = new JFrame();
+				//ArrayList<Node> solution = new ArrayList<Node>();
+				JMenuBar menubar = new JMenuBar();
+				menubar.add(BoardFile);
+				menubar.add(algorithm);
+				f.setJMenuBar(menubar);
+				f.setTitle("Game War");
+				f.add(mm);
+				System.out.println("mm:    "+mm.cols+"     row: "+mm.row);
+				f.setSize(mm.gameBoard.length*50, mm.gameBoard.length*50+180);
+				f.setBackground(Color.WHITE);
+				f.setLocationRelativeTo(null);
+				f.setResizable(false);
+				f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+				//f.addMouseListener(new AL());
+				mm.pOs = "";
+				mm.pOt = "";
+				mm.pTs = "";
+				mm.pTt = "";
+				f.setVisible(true);
+				f.addMouseListener(new AL());
+			}
+			
+		});
 		algorithm.add(strategyOne);
 		algorithm.add(strategyTwo);
 		algorithm.add(strategyThree);
 		algorithm.add(strategyFour);
 		algorithm.add(strategyF);
+		
 		
 
 	
@@ -308,145 +537,20 @@ public class testMain {
 		
 	
 		
-		Node playerOne = null;
-		Node playerTwo = null;
-	
-		/*
 		
-
-		while(true)
-		{
-			long tStart = System.currentTimeMillis();
-			playerOne = mm.minimax(null, true, mm.gameBoard, 1, 3);
-			//System.out.println("OPTIMAL:   "+playerOne.getAccumulated());
-			if(playerOne!=null)
-			{
-			mm.gameBoard[playerOne.getX()][playerOne.getY()].setOwnership(1);
-			System.out.println("x:  "+playerOne.getX()+"    y:  "+playerOne.getY());
-			oneScore+=mm.gameBoard[playerOne.getX()][playerOne.getY()].getScore();
-			boolean pOneconnected = false;
-			for(int i = 0;i<dx.length;i++)
-			{
-
-					int newX = playerOne.getX()+dx[i];
-					int newY = playerOne.getY()+dy[i];
-					if((newX>=0&&newX<6)&&(newY>=0&&newY<6))
-					{
-					if(mm.gameBoard[newX][newY].getOwnership()==1)
-					{
-						pOneconnected = true;
-					}
-					}
-				
-			}
-			if(pOneconnected == true)
-			{
-				for(int i = 0;i<dx.length;i++)
-				{
-	
-						int newX = playerOne.getX()+dx[i];
-						int newY = playerOne.getY()+dy[i];
-						if((newX>=0&&newX<6)&&(newY>=0&&newY<6))
-						{
-						if(mm.gameBoard[newX][newY].getOwnership()!=1&&mm.gameBoard[newX][newY].getOwnership()!=0)
-						{
-							eatOpponent(mm.gameBoard, 1, newX, newY);
-							playerOne.setAccumulated(playerOne.getAccumulated()+mm.gameBoard[newX][newY].getScore());
-							oneScore+=mm.gameBoard[newX][newY].getScore();
-							twoScore-=mm.gameBoard[newX][newY].getScore();
-						}
-						}
-					
-				}
-			}
-			long tEnd = System.currentTimeMillis();
-			long tDelta = tEnd - tStart;
-			double elapsedSeconds = tDelta / 1000.0;
-			mm.pOt = Double.toString(elapsedSeconds);
-			mm.pOs = Integer.toString(oneScore);
-			mm.pTs = Integer.toString(twoScore);
-			for(int i = 0;i<6;i++)
-			{
-				for(int j = 0;j<6;j++)
-				{
-					System.out.print(mm.gameBoard[i][j].getOwnership()+" ");
-				}
-				System.out.println();
-			}
-			//Thread.sleep(5000);
-			mm.repaint();
-			}
-			Thread.sleep(500);
-			
-			long tStartT = System.currentTimeMillis();
-			playerTwo = mm.minimax(null, true, mm.gameBoard, 2,3);
-		//	System.out.println("OPTIMAL2:   "+playerTwo.getAccumulated());
-			if(playerTwo!=null)
-			{
-			mm.gameBoard[playerTwo.getX()][playerTwo.getY()].setOwnership(2);
-			twoScore +=mm.gameBoard[playerTwo.getX()][playerTwo.getY()].getScore();
-			boolean pTwoconnected = false;
-			for(int i = 0;i<dx.length;i++)
-			{
-
-					int newX = playerTwo.getX()+dx[i];
-					int newY = playerTwo.getY()+dy[i];
-					if((newX>=0&&newX<6)&&(newY>=0&&newY<6))
-					{
-					if(mm.gameBoard[newX][newY].getOwnership()==2)
-					{
-						pTwoconnected = true;
-					}
-					}
-				
-			}
-			if(pTwoconnected == true)
-			{
-				for(int i = 0;i<dx.length;i++)
-				{
-	
-						int newX = playerTwo.getX()+dx[i];
-						int newY = playerTwo.getY()+dy[i];
-						if((newX>=0&&newX<6)&&(newY>=0&&newY<6))
-						{
-						if(mm.gameBoard[newX][newY].getOwnership()!=2&&mm.gameBoard[newX][newY].getOwnership()!=0)
-						{
-							eatOpponent(mm.gameBoard, 2, newX, newY);
-							playerTwo.setAccumulated(playerTwo.getAccumulated()+mm.gameBoard[newX][newY].getScore());
-							twoScore+=mm.gameBoard[newX][newY].getScore();
-							oneScore-=mm.gameBoard[newX][newY].getScore();
-						}
-						}
-					
-				}
-			}
-			long tEndT = System.currentTimeMillis();
-			long tDelta = tEndT - tStartT;
-			double elapsedSeconds = tDelta / 1000.0;
-			mm.pTt = Double.toString(elapsedSeconds);
-			mm.pOs = Integer.toString(oneScore);
-			mm.pTs = Integer.toString(twoScore);
-			
-			for(int i = 0;i<6;i++)
-			{
-				for(int j = 0;j<6;j++)
-				{
-					System.out.print(mm.gameBoard[i][j].getOwnership()+" ");
-				}
-				System.out.println();
-			}
-		//	Thread.sleep(5000);
-			mm.repaint();
-			}
-			Thread.sleep(500);
-		}
 	
 		//here noti
-	*/
+	
 		
 	}
-	
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		
+	}
 
+	
+	
 	
 
 }

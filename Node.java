@@ -8,14 +8,17 @@ public class Node implements Comparable<Node>{
 	private int accumulatedScore = 0;
 	public boolean comquared = false;
 	public Node parentNode;
+	static public int ev;
+	static public int enemy;
+	
 	
 	 public int compareTo(Node arg0) 
      {
-         if(this.accumulatedScore < arg0.accumulatedScore)
+         if(this.getAccumulated() < arg0.getAccumulated())
          {
              return -1;
          }
-         else if(this.accumulatedScore> arg0.accumulatedScore)
+         else if(this.getAccumulated()> arg0.getAccumulated())
          {
              return 1;
          }
@@ -60,6 +63,7 @@ public class Node implements Comparable<Node>{
 		this.ownership = ownership; //(0,1,2) = (free, P1, P2)
 		this.x = x;
 		this.y = y;
+		this.enemy = 0;
 	}
 	
 	public int getScore(){
