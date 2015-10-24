@@ -10,7 +10,14 @@ public class Node implements Comparable<Node>{
 	public Node parentNode;
 	static public int ev;
 	static public int enemy;
-	
+	public Node(Integer score,int x,int y, int ownership){
+		this.score = score;
+		this.ownership = ownership; //(0,1,2) = (free, P1, P2)
+		this.x = x;
+		this.y = y;
+		this.enemy = 0;
+		this.nodeExpanded = 0;
+	}
 	
 	 public int compareTo(Node arg0) 
      {
@@ -55,16 +62,10 @@ public class Node implements Comparable<Node>{
 	{
 		y = value;
 	}
+	static int nodeExpanded;
+	
+	
 
-	
-	
-	public Node(Integer score,int x,int y, int ownership){
-		this.score = score;
-		this.ownership = ownership; //(0,1,2) = (free, P1, P2)
-		this.x = x;
-		this.y = y;
-		this.enemy = 0;
-	}
 	
 	public int getScore(){
 		return score;

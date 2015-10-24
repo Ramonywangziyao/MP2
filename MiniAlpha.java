@@ -1,5 +1,5 @@
 
-public class minimaxvsminimax implements Runnable {
+public class MiniAlpha implements Runnable {
 	static int [] dx = {0,-1,0,1};
 	static int [] dy = {-1,0,1,0};
 	static testBoard mm;
@@ -7,7 +7,7 @@ public class minimaxvsminimax implements Runnable {
 	static int twoScore = 0;
 	Node playerOne = null;
 	Node playerTwo = null;
-	public minimaxvsminimax(testBoard mm)
+	public MiniAlpha(testBoard mm)
 	{
 		this.mm = mm;
 	}
@@ -80,6 +80,7 @@ public class minimaxvsminimax implements Runnable {
 			mm.pOs = Integer.toString(oneScore);
 			mm.pTs = Integer.toString(twoScore);
 			mm.playeroneNode = playerOne.nodeExpanded;
+			playerOne.nodeExpanded = 0;
 			mm.repaint();
 			}
 			try {
@@ -92,7 +93,7 @@ public class minimaxvsminimax implements Runnable {
 			long tStartT = System.currentTimeMillis();
 			try {
 				mm.playeroneNode=0;
-				playerTwo = mm.minimax(null, true, mm.gameBoard, 2,3);
+				playerTwo = mm.newAlphaBeta(null, true, mm.gameBoard, 2,3,false);
 			} catch (InterruptedException e2) {
 				// TODO Auto-generated catch block
 				e2.printStackTrace();
@@ -143,6 +144,7 @@ public class minimaxvsminimax implements Runnable {
 			mm.pOs = Integer.toString(oneScore);
 			mm.pTs = Integer.toString(twoScore);
 			mm.playeroneNode = playerTwo.nodeExpanded;
+			playerTwo.nodeExpanded = 0;
 			mm.repaint();
 			}
 			try {
