@@ -215,28 +215,25 @@ public class testBoard extends JComponent implements ActionListener {
 		
 		if(isMaximizing == true)//max
 		{
-			 
+			
 			Node[][] copyOne = new Node[gameBoard.length][gameBoard.length];
 			int enescore=0;
 			//opponent score
 			if(node!=null)
 			{	enescore = node.enemy;}
 			
-			//deep copy of gameBoard
 		    for (int i = 0; i < gameBoard.length; i++) {
 		    	for(int j =0;j<gameBoard.length;j++)
 		    	{	
 		    		Node temp = new Node(gameBoard[i][j].getScore(),gameBoard[i][j].getX(),gameBoard[i][j].getY(),gameBoard[i][j].getOwnership());
-		    		
 		    		copyOne[i][j]=temp;
 		    	}
 		    }
 		    
+		    
 			PriorityQueue<Node> playerOneChildrenList = new PriorityQueue<Node>(Collections.reverseOrder()); //use priorityQueue,acsending or disacsending.
 			Queue<Node> waitList = new LinkedList<Node>();
 			boolean walkable = false;
-			
-			//traverse the map add possible moves
 			for(int i = 0;i<gameBoard.length;i++)
 			{
 				for(int j = 0;j<gameBoard.length;j++)
@@ -249,43 +246,32 @@ public class testBoard extends JComponent implements ActionListener {
 			
 				}
 			}
-			//if no more moves
+			
 			if(walkable == false)
 			{
 				return node;
 			}
+			
 			int waitSize = waitList.size();
 			
-			//ready to expand moves
+			
 			for(int l = 0;l<waitSize;l++)
 			{
 				
 				Node[][] newCopy = new Node[gameBoard.length][gameBoard.length];
-				//deep copy of game board
 			    for (int i = 0; i < gameBoard.length; i++) {
 			    	for(int j =0;j<gameBoard.length;j++)
 			    	{	
 			    		Node temp = new Node(copyOne[i][j].getScore(),copyOne[i][j].getX(),copyOne[i][j].getY(),copyOne[i][j].getOwnership());
 			    		newCopy[i][j]=temp;
-			    		
 			    	}
 			    }
 			    
 				Node takenNode =waitList.poll();
-				playeroneNode++;
-				//add current score
-				if(node!=null)
-				{
-					takenNode.setAccumulated(node.getAccumulated()+takenNode.getScore()-enescore);
-				}
-				else
-				{
-					
-					takenNode.setAccumulated(takenNode.getScore());
-				}
+				takenNode.setAccumulated(takenNode.getScore());
+
 				newCopy[takenNode.getX()][takenNode.getY()].setOwnership(playerID);
 				boolean connected = false;
-				//check if connected to my node
 				for(int i = 0;i<dx.length;i++)
 				{
 						int newX = takenNode.getX()+dx[i];
@@ -300,7 +286,6 @@ public class testBoard extends JComponent implements ActionListener {
 						}
 					
 				}
-				//check to eat the opponent
 				if(connected == true)
 				{
 
@@ -316,13 +301,18 @@ public class testBoard extends JComponent implements ActionListener {
 								this.eatOpponent(newCopy, playerID, newX, newY);
 		
 								takenNode.setAccumulated(takenNode.getAccumulated()+newCopy[newX][newY].getScore());
-
+								enescore-=newCopy[newX][newY].getScore();
 							}
 							}
 						
 					}
 				}
-
+	
+				if(node!=null)
+				{
+					takenNode.setAccumulated(node.getAccumulated()+takenNode.getAccumulated()-enescore);
+				}
+	
 
 				int opponentID = 0;
 				if(playerID == 1)
@@ -332,27 +322,38 @@ public class testBoard extends JComponent implements ActionListener {
 				{
 					opponentID = 1;
 				}
-				//*******recursion
 				Node minValueNode = minimax(takenNode,false,newCopy, opponentID, depth-1);
-				playeroneNode++;
 				if(node!=null)
 				{
 				minValueNode.parentNode = new Node(node.getAccumulated(),node.getX(),node.getY(),node.getOwnership());
+			//	minValueNode.parentNode.ev = minValueNode.getAccumulated()-node.enemy;
+				}
+			//	else
+			//	{
+					minValueNode.parentNode = minValueNode;
+			//		minValueNode.parentNode.ev = minValueNode.ev;
+			//	}
+					
+				
+			//	System.out.println("value:  "+minValueNode.getAccumulated()+"   enemy:  "+node.enemy+"    ev:  "+node.ev);
+			//	Thread.sleep(50);
 				playerOneChildrenList.add(minValueNode);
-				}
-				else
-				{
-					playerOneChildrenList.add(minValueNode);
-				}
+				
 			}
-			if(playerOneChildrenList.peek().parentNode!=null&&node!=null)    //return the maximum
+
+			if(playerOneChildrenList.peek().parentNode!=null&&node!=null)
 			{
-				playerOneChildrenList.peek().parentNode.setAccumulated(playerOneChildrenList.peek().getAccumulated());
-				return playerOneChildrenList.poll().parentNode;
+			playerOneChildrenList.peek().parentNode.setAccumulated(playerOneChildrenList.peek().getAccumulated());
+			//playerOneChildrenList.peek().parentNode.ev = playerOneChildrenList.peek().ev;
+			//System.out.println("max x:  "+playerOneChildrenList.peek().parentNode.getX()+"   y:  "+playerOneChildrenList.peek().parentNode.getY()+"   value:  "+playerOneChildrenList.peek().parentNode.getAccumulated());
+			//System.out.println("return ev:  "+playerOneChildrenList.peek().parentNode.ev);
+			//Thread.sleep(50);
+			return playerOneChildrenList.poll().parentNode;
 			}
-			else//top leve return answer
+			else
 			{
-				playerOneChildrenList.peek().nodeExpanded = playeroneNode;
+			//if(node==null)
+			//System.out.println("pulling max value   "+ playerOneChildrenList.peek().getAccumulated()+"  x:  "+playerOneChildrenList.peek().getX()+"  y:  "+playerOneChildrenList.peek().getY());
 				return playerOneChildrenList.poll();
 			}
 		
@@ -360,7 +361,6 @@ public class testBoard extends JComponent implements ActionListener {
 		if(isMaximizing == false)//min
 		{
 			Node[][] copyOne = new Node[gameBoard.length][gameBoard.length];
-			//deep copy of game board
 		    for (int i = 0; i < gameBoard.length; i++) {
 		    	for(int j =0;j<gameBoard.length;j++)
 		    	{	
@@ -371,7 +371,6 @@ public class testBoard extends JComponent implements ActionListener {
 			PriorityQueue<Node> playerTwoChildrenList = new PriorityQueue<Node>(); 
 			Queue<Node> waitList = new LinkedList<Node>();
 			boolean walkable = false;
-			//traverse to make possible moves
 			for(int i = 0;i<gameBoard.length;i++)
 			{
 				for(int j = 0;j<gameBoard.length;j++)
@@ -380,22 +379,20 @@ public class testBoard extends JComponent implements ActionListener {
 					{
 						waitList.add(new Node(copyOne[i][j].getScore(),i,j,playerID));//everyPosition through the 2D array
 						walkable = true;
-						//playeroneNode++;
 					}
 			
 				}
 			}
 			
-			if(walkable == false)  //return full
+			if(walkable == false)
 			{
 				return node;
 			}
 			
 			int waitSize = waitList.size();
-			//take possible turns 
 			for(int l = 0;l<waitSize;l++)
 			{
-				//deep copy
+				
 				Node[][] newCopy = new Node[gameBoard.length][gameBoard.length];
 			    for (int i = 0; i < gameBoard.length; i++) {
 			    	for(int j =0;j<gameBoard.length;j++)
@@ -405,13 +402,11 @@ public class testBoard extends JComponent implements ActionListener {
 			    	}
 			    }
 				Node takenNode = waitList.poll();
-				playeroneNode++;
 				newCopy[takenNode.getX()][takenNode.getY()].setOwnership(playerID);
-				//pass player blue score down
-				//set green player score
+		
 				takenNode.setAccumulated(node.getAccumulated());
 				takenNode.enemy= newCopy[takenNode.getX()][takenNode.getY()].getScore();
-				//check connected
+				
 				boolean connected = false;
 				for(int i = 0;i<dx.length;i++)
 				{
@@ -441,8 +436,8 @@ public class testBoard extends JComponent implements ActionListener {
 							if(newCopy[newX][newY].getOwnership()!=playerID&&newCopy[newX][newY].getOwnership()!=0)
 							{
 								this.eatOpponent(newCopy, playerID, newX, newY);
-								takenNode.setAccumulated(takenNode.getAccumulated()-newCopy[newX][newY].getScore());    //player blue minus 	
-								takenNode.enemy+=newCopy[newX][newY].getScore();							//player green plus
+								takenNode.setAccumulated(takenNode.getAccumulated()-newCopy[newX][newY].getScore());	
+								takenNode.enemy+=newCopy[newX][newY].getScore();
 							}
 							}
 						
@@ -456,18 +451,24 @@ public class testBoard extends JComponent implements ActionListener {
 				{
 					opponentID = 1;
 				}
-				//*******recursion
+				
 				Node maxValueNode = minimax(takenNode,true,newCopy, opponentID, depth-1);
-				playeroneNode++;
 				maxValueNode.parentNode =  new Node(node.getAccumulated(),node.getX(),node.getY(),node.getOwnership());
+				//maxValueNode.parentNode.ev = maxValueNode.ev;
+				//maxValueNode.parentNode.setAccumulated(maxValueNode.getAccumulated());
 				playerTwoChildrenList.add(maxValueNode);
 			}
-			playerTwoChildrenList.peek().parentNode.setAccumulated(playerTwoChildrenList.peek().getAccumulated());     //take minimum
+			playerTwoChildrenList.peek().parentNode.setAccumulated(playerTwoChildrenList.peek().getAccumulated());
+			//playerTwoChildrenList.peek().parentNode.ev = playerTwoChildrenList.peek().ev;
+			//System.out.println("min:   parent x:  "+playerTwoChildrenList.peek().parentNode.getX()+"    parent y:  "+playerTwoChildrenList.peek().parentNode.getY()+"   Value: "+playerTwoChildrenList.peek().getAccumulated());
+			//System.out.println("MIN:::::          EV:   "+playerTwoChildrenList.peek().parentNode.ev);
+		//	Thread.sleep(50);
 			return playerTwoChildrenList.poll().parentNode;
 		}
 		return null;
 	
 	}
+	
 
 	public Node newAlphaBeta(Node node,  boolean isMaximizing, Node[][] gameBoard,int playerID,int depth,boolean searchOnce) throws InterruptedException 
 	{
@@ -506,27 +507,28 @@ public class testBoard extends JComponent implements ActionListener {
 			{	System.out.println("MAX    recod x:  "+maxrecordSearchedX+"    y  "+maxrecordSearchedY);}
 			else
 			{System.out.println("ALL");}
-			
 			for(int i = maxrecordSearchedX;i<gameBoard.length;i++)
 			{
 				for(int j = maxrecordSearchedY;j<gameBoard.length;j++)
 				{
-					if(copyOne[i][j].getOwnership() == 0&&searchOnce == false)
+					if(copyOne[i][j].getOwnership() == 0)
 					{
-						
-	
+						if(searchOnce == true&&maxrecordSearchedX<gameBoard.length&&maxrecordSearchedY<gameBoard.length)
+						{
+						//	System.out.println("MIN:   do entered one time check:   new x: "+i+"   new y:"+j+"   at depth:  "+depth);
+				//			Thread.sleep(200);
 						waitList.add(new Node(copyOne[i][j].getScore(),i,j,playerID));//everyPosition through the 2D array
-						walkable = true;
-					
-					}
-					else if(i+1<gameBoard.length&&j+1<gameBoard.length&&copyOne[i+1][j+1].getOwnership() == 0&&searchOnce == true)
-					{
-						waitList.add(new Node(copyOne[i+1][j+1].getScore(),i+1,j+1,playerID));//everyPosition through the 2D array
 						walkable = true;
 						maxrecordSearchedX = i+1;
 						maxrecordSearchedY = j+1;
 						//playeroneNode++;
 						break;
+						}else
+						{
+						waitList.add(new Node(copyOne[i][j].getScore(),i,j,playerID));//everyPosition through the 2D array
+						walkable = true;
+						}
+						//playeroneNode++;
 					}
 			
 				}
@@ -535,11 +537,38 @@ public class testBoard extends JComponent implements ActionListener {
 					break;
 				}
 			}
+			/*
+			for(int i = maxrecordSearchedX;i<gameBoard.length;i++)
+			{
+				for(int j = maxrecordSearchedY;j<gameBoard.length;j++)
+				{
+					if(copyOne[i][j].getOwnership() == 0)
+					{
+						waitList.add(new Node(copyOne[i][j].getScore(),i,j,playerID));//everyPosition through the 2D array
+						walkable = true;
+						if(searchOnce == true&&maxrecordSearchedX<gameBoard.length&&maxrecordSearchedY<gameBoard.length)
+						{
+					//	System.out.println("MAX:   do entered one time check:   new x: "+i+"   new y:"+j+"   at depth:  "+depth);
+					//	Thread.sleep(200);
+						maxrecordSearchedX = i;
+						maxrecordSearchedY = j;
+						//playeroneNode++;
+						break;
+						}
+					}
 			
+				}
+				if(searchOnce == true)
+				{
+					break;
+				}
+			}
+			*/
 			if(walkable == false)
 			{
 				return node;
 			}
+			
 			
 			int waitSize = waitList.size();
 			
@@ -558,16 +587,9 @@ public class testBoard extends JComponent implements ActionListener {
 			    
 				Node takenNode =waitList.poll();
 				playeroneNode++;
-				if(node!=null)
-				{
-				//	System.out.println("The score before:  "+node.getAccumulated()+"    score now:   "+takenNode.getScore()+"    enemy:  "+node.enemy);
-					takenNode.setAccumulated(node.getAccumulated()+takenNode.getScore()-enescore);
-				}
-				else
-				{
-					
-					takenNode.setAccumulated(takenNode.getScore());
-				}
+
+				takenNode.setAccumulated(takenNode.getScore());
+			
 				newCopy[takenNode.getX()][takenNode.getY()].setOwnership(playerID);
 				boolean connected = false;
 				for(int i = 0;i<dx.length;i++)
@@ -599,12 +621,18 @@ public class testBoard extends JComponent implements ActionListener {
 								this.eatOpponent(newCopy, playerID, newX, newY);
 		
 								takenNode.setAccumulated(takenNode.getAccumulated()+newCopy[newX][newY].getScore());
-
+								enescore-=newCopy[newX][newY].getScore();
 							}
 							}
 						
 					}
 				}
+	
+				if(node!=null)
+				{
+					takenNode.setAccumulated(node.getAccumulated()+takenNode.getAccumulated()-enescore);
+				}
+	
 
 
 				int opponentID = 0;
@@ -697,22 +725,24 @@ public class testBoard extends JComponent implements ActionListener {
 			{
 				for(int j = maxrecordSearchedY;j<gameBoard.length;j++)
 				{
-					if(copyOne[i][j].getOwnership() == 0&&searchOnce == false)
+					if(copyOne[i][j].getOwnership() == 0)
 					{
-						
-	
+						if(searchOnce == true&&maxrecordSearchedX<gameBoard.length&&maxrecordSearchedY<gameBoard.length)
+						{
+						//	System.out.println("MIN:   do entered one time check:   new x: "+i+"   new y:"+j+"   at depth:  "+depth);
+				//			Thread.sleep(200);
 						waitList.add(new Node(copyOne[i][j].getScore(),i,j,playerID));//everyPosition through the 2D array
 						walkable = true;
-					
-					}
-					else if(i+1<gameBoard.length&&j+1<gameBoard.length&&copyOne[i+1][j+1].getOwnership() == 0&&searchOnce == true)
-					{
-						waitList.add(new Node(copyOne[i+1][j+1].getScore(),i+1,j+1,playerID));//everyPosition through the 2D array
-						walkable = true;
-						maxrecordSearchedX = i+1;
-						maxrecordSearchedY = j+1;
+						maxrecordSearchedX = i;
+						maxrecordSearchedY = j;
 						//playeroneNode++;
 						break;
+						}else
+						{
+						waitList.add(new Node(copyOne[i][j].getScore(),i,j,playerID));//everyPosition through the 2D array
+						walkable = true;
+						}
+						//playeroneNode++;
 					}
 			
 				}
@@ -721,6 +751,7 @@ public class testBoard extends JComponent implements ActionListener {
 					break;
 				}
 			}
+			
 			if(walkable == false)
 			{
 				return node;
