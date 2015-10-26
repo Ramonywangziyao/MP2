@@ -7,6 +7,10 @@ public class minimaxvsminimax implements Runnable {
 	static int twoScore = 0;
 	Node playerOne = null;
 	Node playerTwo = null;
+	static long totalOne;
+	static long	totalTwo; 
+	static long turncount=1;
+	double totalTone=0,totalTtwo=0;
 	public minimaxvsminimax(testBoard mm)
 	{
 		this.mm = mm;
@@ -24,7 +28,7 @@ public class minimaxvsminimax implements Runnable {
 		
 	
 		public void run(){
-		while(true)
+			while(true)
 		{
 			long tStart = System.currentTimeMillis();
 			try {
@@ -76,14 +80,21 @@ public class minimaxvsminimax implements Runnable {
 			long tEnd = System.currentTimeMillis();
 			long tDelta = tEnd - tStart;
 			double elapsedSeconds = tDelta / 1000.0;
+			totalTone+=elapsedSeconds;
 			mm.pOt = Double.toString(elapsedSeconds);
 			mm.pOs = Integer.toString(oneScore);
 			mm.pTs = Integer.toString(twoScore);
-			mm.playeroneNode = playerOne.nodeExpanded;
+			
+			totalOne+=playerOne.nodeExpanded;
+			mm.ban = totalOne/turncount;
+			mm.bat = totalTone/turncount;
+			//mm.playeroneNode = playerOne.nodeExpanded;
+			mm.counter = 0;
+			mm.playeroneNode = totalOne;
 			mm.repaint();
 			}
 			try {
-				Thread.sleep(500);
+				Thread.sleep(50);
 			} catch (InterruptedException e3) {
 				// TODO Auto-generated catch block
 				e3.printStackTrace();
@@ -91,7 +102,7 @@ public class minimaxvsminimax implements Runnable {
 			
 			long tStartT = System.currentTimeMillis();
 			try {
-				mm.playeroneNode=0;
+				mm.playertwoNode=0;
 				playerTwo = mm.minimax(null, true, mm.gameBoard, 2,3);
 			} catch (InterruptedException e2) {
 				// TODO Auto-generated catch block
@@ -139,19 +150,30 @@ public class minimaxvsminimax implements Runnable {
 			long tEndT = System.currentTimeMillis();
 			long tDelta = tEndT - tStartT;
 			double elapsedSeconds = tDelta / 1000.0;
+			totalTtwo+=elapsedSeconds;
 			mm.pTt = Double.toString(elapsedSeconds);
 			mm.pOs = Integer.toString(oneScore);
 			mm.pTs = Integer.toString(twoScore);
-			mm.playeroneNode = playerTwo.nodeExpanded;
+			//mm.playeroneNode = playerTwo.nodeExpanded;
+			totalTwo+=playerTwo.nodeExpanded;
+			mm.ran = totalTwo/turncount;
+			mm.rat = totalTtwo/turncount;
+			mm.counter = 0;
+			mm.playertwoNode = totalTwo;
 			mm.repaint();
+			turncount+=1;
 			}
 			try {
-				Thread.sleep(500);
+				Thread.sleep(50);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
+		
+		
+		
+		//mm.repaint();
 		}
 		};
 		aT.start();

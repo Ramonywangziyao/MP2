@@ -5,11 +5,17 @@ public class Node implements Comparable<Node>{
 	private int ownership;
 	private int x;
 	private int y;
+	int maxrecordSearchedX = 0;
+	int maxrecordSearchedY = 0;
 	private int accumulatedScore = 0;
 	public boolean comquared = false;
 	public Node parentNode;
 	static public int ev;
 	static public int enemy;
+	static boolean noPoll=false;
+	
+	
+	
 	public Node(Integer score,int x,int y, int ownership){
 		this.score = score;
 		this.ownership = ownership; //(0,1,2) = (free, P1, P2)
@@ -29,6 +35,7 @@ public class Node implements Comparable<Node>{
          {
              return 1;
          }
+         
 
          return 0;
      }
@@ -37,10 +44,7 @@ public class Node implements Comparable<Node>{
 	{
 		return accumulatedScore;
 	}
-	public int getAccumulated(int newScore)
-	{
-		return accumulatedScore+=newScore;
-	}
+
 	public void setAccumulated(int newScore)
 	{
 		accumulatedScore=newScore;
@@ -62,7 +66,7 @@ public class Node implements Comparable<Node>{
 	{
 		y = value;
 	}
-	static int nodeExpanded;
+	static long nodeExpanded;
 	
 	
 

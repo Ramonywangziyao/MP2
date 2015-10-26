@@ -1,179 +1,129 @@
 
-
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.PriorityQueue;
-import java.util.Queue;
-
-import javax.swing.JComponent;
-
-public class Player {
-	
-	public int score;
-	public ArrayList nodeExpandPerMove;
-	public ArrayList timePerMove;
-	public GameBoard board;
-	
-	private int playerID;
-	private int playerMode;
-	
-	
-
-	public Player(int playerID, int mode){
-		score = 0;
-		this.playerID = playerID; //(1,2) = (green, blue)
-		nodeExpandPerMove = new ArrayList<Integer>();
-		timePerMove = new ArrayList<Double>();
-		this.setPlayerMode(mode);
-	}
-	
-	public int getTotalNode(){
-		int total = 0;
-		for (int i=0; i<nodeExpandPerMove.size(); i++){
-			total += ((Integer) nodeExpandPerMove.get(i)).intValue();
-		}
-		return total;
-	}
-	
-	public double getTotalTime(){
-		double total = 0;
-		for (int i=0; i<timePerMove.size(); i++){
-			total += ((double) timePerMove.get(i));
-		}
-		return total;
-	}
-	
-	public void setPlayerMode(int mode){
-		if (mode==0) {
-			playerMode = 0; //minimax
-		} else if (mode==1) {
-			playerMode = 1; //alpha-beta
-		} else {
-			System.out.println("Invalid mode");
-			System.exit(1);
-		}
-	}
-	
-	public void choice() throws IOException{
-		//TODO mini or alpha strategy
-		testBoard newBoard = new testBoard(null);
-		if (playerMode==0){
-			Node theNode = minimax(null,true,newBoard.getGameBoard(),1,3);
-		}
-		if (playerMode==1){
-			alpha();
-		}
-	}
-
-	private void alpha() {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	
-	
-	//minimax
-	
-	public Node min(Node one, Node two)
-	{
-		if(one.getAccumulated()<two.getAccumulated())
-		{
-			return one;
-		}
-		else
-			return two;
-	}
-	public Node max(Node one, Node two)
-	{
-		if(one.getAccumulated()>two.getAccumulated())
-		{
-			return one;
-		}
-		else
-			return two;	
-	}
-	public void eatOpponent(Node[][] gameBoard,int playerID,int x,int y)
-	{
-			gameBoard[x][y].setOwnership(playerID);
-	}
-	public int [] dx = {0,-1,0,1};
-	public int [] dy = {-1,0,1,0};
-	//public Queue<Node> playerOneChildrenList = new LinkedList<Node>();
-	static class PQsort implements Comparator<Integer> {
-		 
-		public int compare(Integer one, Integer two) {
-			return two - one;
-		}
-	}
-	private Node minimax(Node node,  boolean isMaximizing, Node[][] gameBoard,int playerID,int depth) {
+	public Node newAlphaBeta(Node node,  boolean isMaximizing, Node[][] gameBoard,int playerID,int depth,boolean searchOnce) throws InterruptedException {
 		// TODO Auto-generated method stub
 		//if node is terminal   BASE CASE
+	//	System.out.println("depth:   "+depth);
+	//	Thread.sleep(300);
 		if(depth==0) //node equals terminal node   origin   ***************************
 		{
+
+			
 			return node; //return heuristic value accumulated Score
 		}
-
+		
 		if(isMaximizing == true)//max
 		{
 			
-			//traverse the map to put the node
+			Node[][] copyOne = new Node[gameBoard.length][gameBoard.length];
+			int enescore=0;
+			int nodesRx = 0;
+			int nodesRy = 0;
+			Node temNode = node;
+			//opponent score
+			if(node!=null)
+			{	enescore = node.enemy;
+			nodesRx = node.maxrecordSearchedX;
+			nodesRy = node.maxrecordSearchedY;}
+			
+		    for (int i = 0; i < gameBoard.length; i++) {
+		    	for(int j =0;j<gameBoard.length;j++)
+		    	{	
+		    		Node temp = new Node(gameBoard[i][j].getScore(),gameBoard[i][j].getX(),gameBoard[i][j].getY(),gameBoard[i][j].getOwnership());
+		    		copyOne[i][j]=temp;
+		    	}
+		    }
+		    
+		    
 			PriorityQueue<Node> playerOneChildrenList = new PriorityQueue<Node>(Collections.reverseOrder()); //use priorityQueue,acsending or disacsending.
 			Queue<Node> waitList = new LinkedList<Node>();
-			for(int i = 0;i<6;i++)
-			{
-				for(int j = 0;i<6;i++)
-				{
-					if(gameBoard[i][j].getOwnership() == 0)
-					{
-						waitList.add(new Node(gameBoard[i][j].getScore(),i,j,playerID));//everyPosition through the 2D array
-					//	Node[][] newBoard = gameBoard;
-					//	newBoard[i][j].comquared = true;
-					//	newBoard[i][j].setOwnership(playerID);
-					}
+			boolean walkable = false;
 			
-				}
-			}
-			
-			for(int l = 0;l<waitList.size();l++)
-			{
-				Node takenNode =waitList.poll();
-				//takenNode.setOwnership(playerID);
-				Node [][] boardCopy = gameBoard;
-				
-				if(node!=null)
+				for(int i = 0;i<gameBoard.length;i++)
 				{
-					takenNode.setAccumulated(node.getAccumulated()+takenNode.getAccumulated());
-					takenNode.parentNode = node;
-					//playerOneChildrenList.add(takenNode);
-				}
-				else
-				{
-					takenNode.setAccumulated(takenNode.getAccumulated());
-					//playerOneChildrenList.add(takenNode);
-				}
-				boardCopy[takenNode.getX()][takenNode.getY()].setOwnership(playerID);
-				//check to comquare or not
-				for(int i = 0;i<4;i++)
-				{
-					if(gameBoard[takenNode.getX()+dx[i]][takenNode.getY()+dy[i]].getOwnership()==playerID)
+					for(int j =0;j<gameBoard.length;j++)
 					{
-						for(int j = 0; j < 4; j++)
+						if(copyOne[i][j].getOwnership()==0)
 						{
-							if(gameBoard[takenNode.getX()+dx[i]][takenNode.getY()+dy[i]].getOwnership()!=playerID)
-							{
-								eatOpponent(gameBoard,playerID,takenNode.getX()+dx[i],takenNode.getY()+dy[i]);
-							}
+						waitList.add(new Node(copyOne[i][j].getScore(),i,j,playerID));//everyPosition through the 2D array
+						walkable = true;
+				//		counter++;
 						}
 					}
 				}
+
+
+			if(walkable == false)
+			{
+				return node;
+			}
+			
+			int waitSize = waitList.size();
+			
+			
+			for(int l = 0;l<waitSize;l++)
+			{
 				
+				Node[][] newCopy = new Node[gameBoard.length][gameBoard.length];
+				Node temT = temNode;
+			    for (int i = 0; i < gameBoard.length; i++) {
+			    	for(int j =0;j<gameBoard.length;j++)
+			    	{	
+			    		Node temp = new Node(copyOne[i][j].getScore(),copyOne[i][j].getX(),copyOne[i][j].getY(),copyOne[i][j].getOwnership());
+			    		newCopy[i][j]=temp;
+			    	}
+			    }
+			    
+				Node takenNode =waitList.poll();
+				counter++;
+				takenNode.setAccumulated(newCopy[takenNode.getX()][takenNode.getY()].getScore());
+				takenNode.enemy = 0;
+				newCopy[takenNode.getX()][takenNode.getY()].setOwnership(playerID);
+				boolean connected = false;
+				for(int i = 0;i<dx.length;i++)
+				{
+						int newX = takenNode.getX()+dx[i];
+						int newY = takenNode.getY()+dy[i];
+						if((newX>=0&&newX<gameBoard.length)&&(newY>=0&&newY<gameBoard.length))
+						{
+						if(newCopy[newX][newY].getOwnership()==playerID)
+						{
+		
+							connected = true;
+						}
+						}
+					
+				}
+				if(connected == true)
+				{
+
+					for(int i = 0;i<dx.length;i++)
+					{
+		
+							int newX = takenNode.getX()+dx[i];
+							int newY = takenNode.getY()+dy[i];
+							if((newX>=0&&newX<gameBoard.length)&&(newY>=0&&newY<gameBoard.length))
+							{
+							if(newCopy[newX][newY].getOwnership()!=playerID&&newCopy[newX][newY].getOwnership()!=0)
+							{
+								this.eatOpponent(newCopy, playerID, newX, newY);
+		
+								takenNode.setAccumulated(takenNode.getAccumulated()+newCopy[newX][newY].getScore());
+								enescore-=newCopy[newX][newY].getScore();
+								takenNode.enemy = enescore;
+							}
+							}
+						
+					}
+				}
+	
+				if(depth==1)
+				{
+	
+					takenNode.setAccumulated(node.getAccumulated()+takenNode.getAccumulated());
+
+				}
+	
+
 				int opponentID = 0;
 				if(playerID == 1)
 				{
@@ -182,66 +132,172 @@ public class Player {
 				{
 					opponentID = 1;
 				}
+				if(playerOneChildrenList.isEmpty()==false)
+				{
+					//	System.out.println("asdas");
+			//		System.out.println("A  depth:   "+depth);
+				//	Thread.sleep(300);
+						Node minValueNode = newAlphaBeta(takenNode,false,newCopy, opponentID, depth-1,true);
+						counter++;
+					
+						
+
+
+							if(node!=null)
+								minValueNode.parentNode = new Node(node.getAccumulated(),node.getX(),node.getY(),node.getOwnership());
+							playerOneChildrenList.add(minValueNode);
+							continue;
+	
+					//	}
+					
+						
+						
+					
+						
+					
+					
+						
+				}
+				else
+				{
+				//	System.out.println("B  depth:   "+depth);
+					//Thread.sleep(300);
+					Node minValueNode = newAlphaBeta(takenNode,false,newCopy, opponentID, depth-1,false);
+					//this.alpha = minValueNode;
+					
+					counter++;
+					//playeroneNode++;
+					if(node!=null)
+						minValueNode.parentNode = new Node(node.getAccumulated(),node.getX(),node.getY(),node.getOwnership());
+					
+					playerOneChildrenList.add(minValueNode);
+		
+						if(depth == 3)
+						{
+			//				System.out.println("setting alpha");
+							//Thread.sleep(300);
 				
-				Node minValueNode = minimax(takenNode,false,boardCopy, opponentID, depth-1);
-				playerOneChildrenList.add(minValueNode);
-				//Node comparedValue = max(searchedNode,bestValue);
+								this.alpha = minValueNode;
+			//			System.out.println("alpha once:    "+this.alpha.getAccumulated());
+					//	Thread.sleep(5000);
+						}
+				}
+				
 			}
-			return playerOneChildrenList.poll();
-			
+
+			if(playerOneChildrenList.peek().parentNode!=null||node!=null)
+			{
+			//	System.out.println("returning:    "+playerOneChildrenList.peek().getAccumulated());
+			//	System.out.println(500);
+			playerOneChildrenList.peek().parentNode.setAccumulated(playerOneChildrenList.peek().getAccumulated());
+			playerOneChildrenList.peek().parentNode.noPoll = playerOneChildrenList.peek().noPoll;
+
+			return playerOneChildrenList.poll().parentNode;
+			}
+			else
+			{
+				playerOneChildrenList.peek().nodeExpanded = counter;
+				return playerOneChildrenList.poll();
+			}
 		
 		}else
 		if(isMaximizing == false)//min
 		{
+			Node[][] copyOne = new Node[gameBoard.length][gameBoard.length];
+			int currentEnescore = node.enemy;
+			int nodesRx = node.maxrecordSearchedX;
+			int nodesRy = node.maxrecordSearchedY;
+			Node temNode = node;
+		    for (int i = 0; i < gameBoard.length; i++) {
+		    	for(int j =0;j<gameBoard.length;j++)
+		    	{	
+		    		Node temp = new Node(gameBoard[i][j].getScore(),gameBoard[i][j].getX(),gameBoard[i][j].getY(),gameBoard[i][j].getOwnership());
+		    	 copyOne[i][j]=temp;
+		    	}
+		    }
 			PriorityQueue<Node> playerTwoChildrenList = new PriorityQueue<Node>(); 
 			Queue<Node> waitList = new LinkedList<Node>();
-			for(int i = 0;i<6;i++)
-			{
-				for(int j = 0;i<6;i++)
+			boolean walkable = false;
+	
+				for(int i = 0;i<gameBoard.length;i++)
 				{
-					if(gameBoard[i][j].getOwnership() == 0)
+					for(int j =0;j<gameBoard.length;j++)
 					{
-						waitList.add(new Node(gameBoard[i][j].getScore(),i,j,playerID));//everyPosition through the 2D array
-						//gameBoard[i][j].comquared = true;
-						//gameBoard[i][j].setOwnership(playerID);
-					}
-			
-				}
-			}
-			
-			for(int l = 0;l<waitList.size();l++)
-			{
-				Node takenNode = waitList.poll();
-				Node [][] boardCopy = gameBoard;
-				
-				if(node!=null)
-				{
-					takenNode.setAccumulated(node.getAccumulated()+takenNode.getAccumulated());
-					takenNode.parentNode = node;
-					//playerTwoChildrenList.add(takenNode);
-				}
-				else
-				{
-					takenNode.setAccumulated(takenNode.getAccumulated());
-					//playerTwoChildrenList.add(takenNode);
-				}
-				boardCopy[takenNode.getX()][takenNode.getY()].setOwnership(playerID);
-				//check to comquare or not
-				for(int i = 0;i<4;i++)
-				{
-					if(gameBoard[takenNode.getX()+dx[i]][takenNode.getY()+dy[i]].getOwnership()==playerID)
-					{
-						for(int j = 0; j < 4; j++)
+						if(copyOne[i][j].getOwnership()==0)
 						{
-							if(gameBoard[takenNode.getX()+dx[i]][takenNode.getY()+dy[i]].getOwnership()!=playerID)
-							{
-								eatOpponent(gameBoard,playerID,takenNode.getX()+dx[i],takenNode.getY()+dy[i]);
-							}
+						waitList.add(new Node(copyOne[i][j].getScore(),i,j,playerID));//everyPosition through the 2D array
+						walkable = true;
+				//		counter++;
 						}
 					}
 				}
+	
+			if(walkable == false)
+			{
+				return node;
+			}
 			
+			int waitSize = waitList.size();
+
+			for(int l = 0;l<waitSize;l++)
+			{
+
+				Node[][] newCopy = new Node[gameBoard.length][gameBoard.length];
+				Node temT = temNode;
+			    for (int i = 0; i < gameBoard.length; i++) {
+			    	for(int j =0;j<gameBoard.length;j++)
+			    	{	
+			    		Node temp = new Node(copyOne[i][j].getScore(),copyOne[i][j].getX(),copyOne[i][j].getY(),copyOne[i][j].getOwnership());
+			    		newCopy[i][j]=temp;
+			    	}
+			    }
+
+				Node takenNode = waitList.poll();
+				counter++;
+				newCopy[takenNode.getX()][takenNode.getY()].setOwnership(playerID);
+		
+				takenNode.setAccumulated(node.getAccumulated());
+
+				takenNode.enemy= currentEnescore+newCopy[takenNode.getX()][takenNode.getY()].getScore();
 				
+				boolean connected = false;
+				for(int i = 0;i<dx.length;i++)
+				{
+	
+						int newX = takenNode.getX()+dx[i];
+						int newY = takenNode.getY()+dy[i];
+						if((newX>=0&&newX<gameBoard.length)&&(newY>=0&&newY<gameBoard.length))
+						{
+						if(newCopy[newX][newY].getOwnership()==playerID)
+						{
+				
+							connected = true;
+						}
+						}
+					
+				}
+				if(connected == true)
+				{
+			
+					for(int i = 0;i<dx.length;i++)
+					{
+		
+							int newX = takenNode.getX()+dx[i];
+							int newY = takenNode.getY()+dy[i];
+							if((newX>=0&&newX<gameBoard.length)&&(newY>=0&&newY<gameBoard.length))
+							{
+							if(newCopy[newX][newY].getOwnership()!=playerID&&newCopy[newX][newY].getOwnership()!=0)
+							{
+								this.eatOpponent(newCopy, playerID, newX, newY);
+								takenNode.setAccumulated(takenNode.getAccumulated()-newCopy[newX][newY].getScore());	
+								takenNode.enemy+=newCopy[newX][newY].getScore();
+								
+							}
+							}
+						
+					}
+				}
+
 				int opponentID = 0;
 				if(playerID == 1)
 				{
@@ -251,20 +307,77 @@ public class Player {
 					opponentID = 1;
 				}
 				
-				Node maxValueNode = minimax(takenNode,true,boardCopy, opponentID, depth-1);
-				playerTwoChildrenList.add(maxValueNode);
+				if(playerTwoChildrenList.isEmpty()==false)
+				{
+			//		System.out.println(" C  depth:   "+depth);
+				//	Thread.sleep(300);
+						Node maxValueNode = newAlphaBeta(takenNode,true,newCopy, opponentID, depth-1,true);
+						counter++;
+			
+						
+						//playeroneNode++;
+						maxValueNode.parentNode = new Node(node.getAccumulated(),node.getX(),node.getY(),node.getOwnership());
+						if(this.alpha!=null)
+						{
+				//		System.out.println(maxValueNode.getAccumulated()+"         "+this.alpha.getAccumulated());
+					//	Thread.sleep(5000);
+						if(maxValueNode.getAccumulated()<this.alpha.getAccumulated())
+						{
+					//		System.out.println("break     l should be "+waitSize+"   now:   "+l);
+							playerTwoChildrenList.add(maxValueNode);
+							break;
+							//node.noPoll = true;
+							
+						}
+						}
+						playerTwoChildrenList.add(maxValueNode);
+					//	if(maxValueNode.noPoll == true)
+					//	{
+					//		System.out.println("the discard value:  "+maxValueNode.getAccumulated()+"    compareTo:   "+this.alpha.getAccumulated());
+					//		break;
+					//	}
+						
+						
+						
+						
+					
+				}
+				else
+				{
+				//	System.out.println(" D  depth:   "+depth);
+				//	Thread.sleep(300);
+					Node maxValueNode = newAlphaBeta(takenNode,true,newCopy, opponentID, depth-1,false);
+					counter++;
+					
+					maxValueNode.parentNode = new Node(node.getAccumulated(),node.getX(),node.getY(),node.getOwnership());
+					if(this.alpha!=null)
+					{
+					if(maxValueNode.getAccumulated()<this.alpha.getAccumulated())
+					{
+					//	System.out.println("break     l should be "+waitSize+"   now:   "+l);
+						playerTwoChildrenList.add(maxValueNode);
+						break;
+						//node.noPoll = true;
+						
+					}
+					}
+					playerTwoChildrenList.add(maxValueNode);
+				//	if(maxValueNode.noPoll == true)
+				//	{
+				//		
+				//		break;
+				//	}
+				}
+			
 			}
-			return playerTwoChildrenList.poll();
+			playerTwoChildrenList.peek().parentNode.setAccumulated(playerTwoChildrenList.peek().getAccumulated());
+
+			return playerTwoChildrenList.poll().parentNode;
 		}
 		return null;
-		
-		
-		
-		
+	
 	}
-
-
-
 	
 	
-}
+	
+	

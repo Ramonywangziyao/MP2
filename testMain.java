@@ -28,12 +28,18 @@ public class testMain implements Runnable{
 	static Node pOne;
 	static Node pTwo;
 	static int playX;
+	static Node playerOne = null;
+	static Node playerTwo = null;
 	static int playY;
 	static String pOneScore;
 	static String pTwoScore;
 	static int [] dx = {0,-1,0,1};
 	static int [] dy = {-1,0,1,0};
-
+	static long totalOne;
+	static long	totalTwo; 
+	static long turncount=1;
+	static double totalTone=0;
+	static double totalTtwo=0;
 	static JFrame f;
 	static testBoard mm;
 	static int oneScore = 0;
@@ -182,7 +188,14 @@ public class testMain implements Runnable{
 		    			mm.pTt = Double.toString(elapsedSeconds);
 		    			mm.pOs = Integer.toString(oneScore);
 		    			mm.pTs = Integer.toString(twoScore);
-		        		mm.repaint();
+		    			//mm.playeroneNode = playerTwo.nodeExpanded;
+		    			totalTwo+=playerTwo.nodeExpanded;
+		    			mm.ran = totalTwo/turncount;
+		    			mm.rat = totalTtwo/turncount;
+		    			mm.counter = 0;
+		    			mm.playertwoNode = totalTwo;
+		    			mm.repaint();
+		    			turncount+=1;
 
 		        	}
 		        };
@@ -329,7 +342,14 @@ public class testMain implements Runnable{
 		    			mm.pTt = Double.toString(elapsedSeconds);
 		    			mm.pOs = Integer.toString(oneScore);
 		    			mm.pTs = Integer.toString(twoScore);
-		        		mm.repaint();
+		    			//mm.playeroneNode = playerTwo.nodeExpanded;
+		    			totalTwo+=playerTwo.nodeExpanded;
+		    			mm.ran = totalTwo/turncount;
+		    			mm.rat = totalTtwo/turncount;
+		    			mm.counter = 0;
+		    			mm.playertwoNode = totalTwo;
+		    			mm.repaint();
+		    			turncount+=1;
 
 		        	}
 		        };
@@ -376,7 +396,7 @@ public class testMain implements Runnable{
 					f.setJMenuBar(menubar);
 					f.setTitle("Game War");
 					f.add(mm);
-					f.setSize(mm.gameBoard.length*50, mm.gameBoard.length*50+235);
+					f.setSize(mm.gameBoard.length*50, mm.gameBoard.length*50+340);
 					f.setBackground(Color.WHITE);
 					f.setLocationRelativeTo(null);
 					f.setResizable(false);
@@ -387,6 +407,8 @@ public class testMain implements Runnable{
 					mm.pOt = "";
 					mm.pTs = "";
 					mm.pTt = "";
+					
+					
 	            }
 
 	        });
@@ -408,7 +430,7 @@ public class testMain implements Runnable{
 					f.setJMenuBar(menubar);
 					f.setTitle("Game War");
 					f.add(mm);
-					f.setSize(mm.gameBoard.length*50, mm.gameBoard.length*50+235);
+					f.setSize(mm.gameBoard.length*50, mm.gameBoard.length*50+340);
 					f.setBackground(Color.WHITE);
 					f.setLocationRelativeTo(null);
 					f.setResizable(false);
@@ -440,7 +462,7 @@ public class testMain implements Runnable{
 					f.setJMenuBar(menubar);
 					f.setTitle("Game War");
 					f.add(mm);
-					f.setSize(mm.gameBoard.length*50, mm.gameBoard.length*50+235);
+					f.setSize(mm.gameBoard.length*50, mm.gameBoard.length*50+340);
 					f.setBackground(Color.WHITE);
 					f.setLocationRelativeTo(null);
 					f.setResizable(false);
@@ -472,7 +494,7 @@ public class testMain implements Runnable{
 					f.setJMenuBar(menubar);
 					f.setTitle("Game War");
 					f.add(mm);
-					f.setSize(mm.gameBoard.length*50, mm.gameBoard.length*50+235);
+					f.setSize(mm.gameBoard.length*50, mm.gameBoard.length*50+340);
 					f.setBackground(Color.WHITE);
 					f.setLocationRelativeTo(null);
 					f.setResizable(false);
@@ -504,7 +526,7 @@ public class testMain implements Runnable{
 					f.setJMenuBar(menubar);
 					f.setTitle("Game War");
 					f.add(mm);
-					f.setSize(mm.gameBoard.length*50, mm.gameBoard.length*50+235);
+					f.setSize(mm.gameBoard.length*50, mm.gameBoard.length*50+340);
 					f.setBackground(Color.WHITE);
 					f.setLocationRelativeTo(null);
 					f.setResizable(false);
@@ -536,7 +558,7 @@ public class testMain implements Runnable{
 					f.setJMenuBar(menubar);
 					f.setTitle("Game War");
 					f.add(mm);
-					f.setSize(mm.gameBoard.length*50, mm.gameBoard.length*50+235);
+					f.setSize(mm.gameBoard.length*50, mm.gameBoard.length*50+340);
 					f.setBackground(Color.WHITE);
 					f.setLocationRelativeTo(null);
 					f.setResizable(false);
@@ -572,7 +594,7 @@ public class testMain implements Runnable{
 				f.setJMenuBar(menubar);
 				f.setTitle("Game War");
 				f.add(mm);
-				f.setSize(mm.gameBoard.length*50, mm.gameBoard.length*50+235);
+				f.setSize(mm.gameBoard.length*50, mm.gameBoard.length*50+340);
 				f.setBackground(Color.WHITE);
 				f.setLocationRelativeTo(null);
 				f.setResizable(false);
@@ -605,7 +627,7 @@ public class testMain implements Runnable{
 				f.setJMenuBar(menubar);
 				f.setTitle("Game War");
 				f.add(mm);
-				f.setSize(mm.gameBoard.length*50, mm.gameBoard.length*50+235);
+				f.setSize(mm.gameBoard.length*50, mm.gameBoard.length*50+340);
 				f.setBackground(Color.WHITE);
 				f.setLocationRelativeTo(null);
 				f.setResizable(false);
@@ -638,7 +660,7 @@ public class testMain implements Runnable{
 				f.setJMenuBar(menubar);
 				f.setTitle("Game War");
 				f.add(mm);
-				f.setSize(mm.gameBoard.length*50, mm.gameBoard.length*50+235);
+				f.setSize(mm.gameBoard.length*50, mm.gameBoard.length*50+340);
 				f.setBackground(Color.WHITE);
 				f.setLocationRelativeTo(null);
 				f.setResizable(false);
@@ -672,7 +694,7 @@ public class testMain implements Runnable{
 				f.setJMenuBar(menubar);
 				f.setTitle("Game War");
 				f.add(mm);
-				f.setSize(mm.gameBoard.length*50, mm.gameBoard.length*50+235);
+				f.setSize(mm.gameBoard.length*50, mm.gameBoard.length*50+340);
 				f.setBackground(Color.WHITE);
 				f.setLocationRelativeTo(null);
 				f.setResizable(false);
@@ -709,7 +731,7 @@ public class testMain implements Runnable{
 				f.setJMenuBar(menubar);
 				f.setTitle("Game War");
 				f.add(mm);
-				f.setSize(mm.gameBoard.length*50, mm.gameBoard.length*50+235);
+				f.setSize(mm.gameBoard.length*50, mm.gameBoard.length*50+340);
 				f.setBackground(Color.WHITE);
 				f.setLocationRelativeTo(null);
 				f.setResizable(false);
@@ -743,7 +765,7 @@ public class testMain implements Runnable{
 				f.setJMenuBar(menubar);
 				f.setTitle("Game War");
 				f.add(mm);
-				f.setSize(mm.gameBoard.length*50, mm.gameBoard.length*50+235);
+				f.setSize(mm.gameBoard.length*50, mm.gameBoard.length*50+340);
 				f.setBackground(Color.WHITE);
 				f.setLocationRelativeTo(null);
 				f.setResizable(false);
@@ -770,7 +792,7 @@ public class testMain implements Runnable{
 		mm = new testBoard(fileName);
 		f.setTitle("Game War");
 		f.add(mm);
-		f.setSize(mm.gameBoard.length*50, mm.gameBoard.length*50+235);
+		f.setSize(mm.gameBoard.length*50, mm.gameBoard.length*50+340);
 		f.setBackground(Color.WHITE);
 		f.setLocationRelativeTo(null);
 		f.setResizable(false);
