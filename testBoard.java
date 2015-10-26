@@ -841,7 +841,7 @@ public class testBoard extends JComponent implements ActionListener {
 					maxValueNode.parentNode = new Node(node.getAccumulated(),node.getX(),node.getY(),node.getOwnership());
 					if(this.alpha!=null)
 					{
-					if(maxValueNode.getAccumulated()<this.alpha.getAccumulated())
+					if(maxValueNode.getAccumulated()<=this.alpha.getAccumulated())
 					{
 					//	System.out.println("break     l should be "+waitSize+"   now:   "+l);
 						playerTwoChildrenList.add(maxValueNode);
@@ -942,7 +942,9 @@ public class testBoard extends JComponent implements ActionListener {
 		g.drawString("Blue expanded:  "+playeroneNode,10,gameBoard.length*50+80 );
 		g.drawString("Blue Average Node/t:  "+ban,10,gameBoard.length*50+105 );
 		g.drawString("Blue Average Time/t:  "+new DecimalFormat("#0.0000").format(bat),10,gameBoard.length*50+130 );
-		
+		g.setColor(Color.black);
+		g.fillRect(0, gameBoard.length*50+141, gameBoard.length*50, 3);
+		g.setColor(Color.black);
 		g.drawString("Red Player Score:  "+pTs,10,gameBoard.length*50+ 165);
 		g.drawString("Red Player Decision Time:  "+pTt,10,gameBoard.length*50+190 );
 		
